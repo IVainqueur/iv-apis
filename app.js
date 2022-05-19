@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/nocors', nocorsRoute)
 app.use('*', (req, res)=>{
-    console.log("[log]: Undocumented route")
+    console.log("[log] Undocumented route")
     res.send({code: "#Undocumented", message: "Nothing on this route yet"})
 })
 

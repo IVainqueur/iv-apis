@@ -7,16 +7,22 @@ const fetch = require('node-fetch')
 
 
 app.post("/", async (req, res)=>{
-    let body = _pick(["headers", "method", "url"], req.body)
+    let body = _pick(["headers", "method", "url", "body"], req.body)
     let options = {
         method: body.method ? body.method : 'GET',
-        headers: body.headers
+        headers: body.headers,
+        body: JSON.stringify(body.body)
     }
+    console.log(options)
     let response = await fetch(body.url, options)
+    let headers = {}
+    for (let pair of response.headers.entries()) {
+        headers[pair[0]] = pair[1]
+    }
     let data = await response.text()
     try{
         let toSend = JSON.parse(data)
-        res.send({data: toSend, isJson: true})
+        res.send({data: toSend, isJson: true, headers})
 
     }catch(e){
         res.send({
