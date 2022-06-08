@@ -14,7 +14,11 @@ app.post("/", async (req, res)=>{
         body: JSON.stringify(body.body)
     }
     console.log(options)
-    let response = await fetch(body.url, options)
+    try{
+        let response = await fetch(body.url, options)
+    }catch(e){
+        res.json({code: "#Error", message: e})
+    }
     let headers = {}
     for (let pair of response.headers.entries()) {
         headers[pair[0]] = pair[1]

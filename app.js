@@ -20,5 +20,5 @@ app.use('*', (req, res)=>{
 
 
 app.listen(process.env.PORT, ()=>{
-    console.log("[log]: Server is up")
+    console.log("[log]: Server is up at PORT ", process.env.PORT)
 })
