@@ -14,6 +14,7 @@ app.post("/", async (req, res)=>{
         body: JSON.stringify(body.body)
     }
     console.log(options)
+    let response;
     try{
         let response = await fetch(body.url, options)
     }catch(e){
