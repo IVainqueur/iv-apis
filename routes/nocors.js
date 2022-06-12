@@ -16,7 +16,7 @@ app.post("/", async (req, res)=>{
     console.log(options)
     let response;
     try{
-        let response = await fetch(body.url, options)
+        response = await fetch(body.url, options)
     }catch(e){
         res.json({code: "#Error", message: e})
     }
