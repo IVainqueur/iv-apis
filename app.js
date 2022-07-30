@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const {_pick, _remove, arr_remove} = require('./oneliners')
 const nocorsRoute = require('./routes/nocors')
 const emailRoute = require('./routes/smtpEmail')
+const anonymousRoute = require('./routes/anonymous')
 
 
 require('dotenv').config()
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/nocors', nocorsRoute)
 app.use('/sendMail', emailRoute)
+app.use('/anonymous', anonymousRoute)
 
 app.use('*', (req, res)=>{
     console.log("[log] Undocumented route")
