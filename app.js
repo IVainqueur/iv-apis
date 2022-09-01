@@ -12,19 +12,19 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swaggers/ekosora/swagger.json');
 const swaggerOptions = {
     explorer: true,
-    customJs: '/customSwaggerjs.js',
+    customJs: '/swaggers/ekosora/customSwaggerjs.js',
     customCssUrl: '/swaggers/ekosora/customSwaggerCss.css'
 }
-app.get("/customSwaggerjs.js", (req, res)=>{
+app.get("/ekosora/api/docs/customSwaggerjs.js", (req, res)=>{
     res.sendFile(__dirname + '/swaggers/ekosora/customSwaggerjs.js')
 })
-app.get("/customSwaggerCss.css", (req, res)=>{
+app.get("/ekosora/api/docs/customSwaggerCss.css", (req, res)=>{
     res.sendFile(__dirname + '/swaggers/ekosora/customSwaggerCss.css')
 })
-app.get('/api/docs/favicon-32x32.png', (req, res)=>{
+app.get('/ekosora/api/docs/favicon-32x32.png', (req, res)=>{
     return res.sendFile(__dirname+'/swaggers/ekosora/favicon.png')
 })
-app.get('/api/docs/favicon-16x16.png', (req, res)=>{
+app.get('/ekosora/api/docs/favicon-16x16.png', (req, res)=>{
     return res.sendFile(__dirname+'/swaggers/ekosora/favicon.png')
 })
 app.use('/ekosora/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions))
