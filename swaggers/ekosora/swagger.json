@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is eKOSORA, an Academics management system. The next URUBUTO but better.",
+        "description": "This is eKOSORA, an academics management system. The next URUBUTO but better.",
         "version": "1.0.0",
         "title": "eKOSORA",
         "contact": {
