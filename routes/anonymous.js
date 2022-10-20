@@ -82,6 +82,14 @@ app.get('/search', async (req, res) => {
     }
 })
 
+app.get('/random/:search', async (req, res) => {
+    const search = req.params.search ?? '';
+    const orientation = req.query.orientation ?? '';
+    const URI = `https://api.unsplash.com/photos/random?query=${search}&client_id=${process.env.CLIENT_ID}&orientation=${orientation}`;
+    const results = await axios.get(URI);
+    res.json(results.data);
+
+})
 module.exports = app
 
 
