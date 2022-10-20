@@ -89,15 +89,14 @@ app.get('/random/:search', async (req, res) => {
     const URI = `https://api.unsplash.com/photos/random?query=${search}&client_id=${process.env.CLIENT_ID}&orientation=${orientation}`;
     try {
         const results = await axios.get(URI);
-        res.json(results.data.urls.raw);
+        res.redirect(results.data.urls.raw);
     } catch (e) {
-        res.json({
-            code: "#Error",
-            message: e.message
-        })
+        res.redirect('https://via.placeholder.com/300?text=404')
     }
 
 })
+
+
 module.exports = app
 
 
