@@ -6,6 +6,7 @@ const mongo = require('mongoose')
 const Photos = require('../models/ml-photos')
 const Search = require('../models/ml-search')
 const axios = require('axios')
+const querystring = require('querystring')
 
 
 app.use(cors())
@@ -84,12 +85,21 @@ app.get('/search', async (req, res) => {
 
 app.get('/random/:search', async (req, res) => {
     const search = req.params.search ?? '';
+    const width = req.query.width ?? 400;
+    const height = req.query.height ?? 400;
     const orientation = req.query.orientation ?? 'landscape';
-    console.log(search, orientation)
+    console.log(search, orientation, width, height)
     const URI = `https://api.unsplash.com/photos/random?query=${search}&client_id=${process.env.CLIENT_ID}&orientation=${orientation}`;
     try {
         const results = await axios.get(URI);
-        res.redirect(results.data.urls.raw);
+        const resizeParams = querystring.stringify({
+            "api-key": process.env.NEUTRINO_API_KEY,
+            "user-id": process.env.NEUTRINO_USER_ID,
+            "image-url": results.data.urls.raw,
+            "width": Number(width),
+            "height": Number(height),
+        })
+        res.redirect(`https://neutrinoapi.net/image-resize?${resizeParams}`);
     } catch (e) {
         res.redirect('https://via.placeholder.com/300?text=404')
     }
