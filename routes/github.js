@@ -66,7 +66,7 @@ const getlanguages = async (username) => {
         ${data.lang}
         ${githubHTML.divClose}
         `
-    });
+    }).join(' ');
 
     return `
         ${githubHTML.style}

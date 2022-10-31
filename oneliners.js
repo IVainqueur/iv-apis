@@ -87,6 +87,7 @@ const githubHTML = {
                 padding: 2px 8px;
                 border-radius: 20px;
                 scale: 0;
+                color: white;
             }
 
             .bar:hover::after{
@@ -117,7 +118,7 @@ const githubSortLanguages = (languages) => {
         tempArr.push({
             lang,
             total: Object.values(langs)[i].total,
-            percentage: (Object.values(langs)[i].total/total)*100
+            percentage: ((Object.values(langs)[i].total/total)*100).toString().slice(0, 4) + "%"
         })
     })
     console.log(tempArr, total)
