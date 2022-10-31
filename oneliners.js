@@ -88,6 +88,7 @@ const githubHTML = {
                 padding: 2px 8px;
                 border-radius: 20px;
                 scale: 0;
+                z-index: 10;
             }
 
             .bar:hover::after{
