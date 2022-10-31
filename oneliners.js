@@ -113,11 +113,11 @@ const githubSortLanguages = (languages) => {
         })
     })
 
-    Object.keys(langs).map((lang)=>{
+    Object.keys(langs).map((lang, i)=>{
         tempArr.push({
             lang,
-            total: lang.total,
-            percentage: (lang.total/total)*100
+            total: Object.values(langs)[i].total,
+            percentage: (Object.values(langs)[i].total/total)*100
         })
     })
     console.log(tempArr, total)
