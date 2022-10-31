@@ -90,7 +90,7 @@ app.get('/getrepos', async (req, res) => {
 
 app.get('/getlanguages', async (req, res) => {
     try {
-        res.header('Content-Type', 'image/svg+xml')
+        res.header('Content-Type', 'text/html')
         res.send(await getlanguages(req.query.username));
     } catch (e) {
         console.log(e.message)
