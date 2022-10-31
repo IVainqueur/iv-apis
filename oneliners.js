@@ -74,6 +74,7 @@ const githubHTML = {
                 width: fit-content;
                 position: relative;
                 transition: .1s linear;
+                color: white;
             }
             .bar::after{
                 transition:inherit;
@@ -87,7 +88,6 @@ const githubHTML = {
                 padding: 2px 8px;
                 border-radius: 20px;
                 scale: 0;
-                color: white;
             }
 
             .bar:hover::after{
