@@ -80,7 +80,7 @@ app.get('/getrepos', async (req, res) => {
     try {
         res.send(await getrepos(req.query.username));
     } catch (e) {
-        console.log(e)
+        console.log(e.message)
         res.status(500).json({
             code: '#Error',
             message: e.message,
@@ -93,7 +93,7 @@ app.get('/getlanguages', async (req, res) => {
         res.header('Content-Type', 'text/html')
         res.send(await getlanguages(req.query.username));
     } catch (e) {
-        console.log(e)
+        console.log(e.message)
         res.status(500).json({
             code: '#Error',
             message: e.message,
