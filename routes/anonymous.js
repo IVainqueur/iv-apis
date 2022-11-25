@@ -85,21 +85,21 @@ app.get('/search', async (req, res) => {
 
 app.get('/random/:search', async (req, res) => {
     const search = req.params.search ?? '';
-    const width = req.query.width ?? 400;
-    const height = req.query.height ?? 400;
+    const size = req.query.size ?? 'regular';
     const orientation = req.query.orientation ?? 'landscape';
-    console.log(search, orientation, width, height)
+    console.log(search, orientation, size);
+    
     const URI = `https://api.unsplash.com/photos/random?query=${search}&client_id=${process.env.CLIENT_ID}&orientation=${orientation}`;
     try {
         const results = await axios.get(URI);
-        const resizeParams = querystring.stringify({
-            "api-key": process.env.NEUTRINO_API_KEY,
-            "user-id": process.env.NEUTRINO_USER_ID,
-            "image-url": results.data.urls.raw,
-            "width": Number(width),
-            "height": Number(height),
-        })
-        res.redirect(`https://neutrinoapi.net/image-resize?${resizeParams}`);
+        const img = results.data.urls[size]
+            ?? results.data.urls.thumb
+            ?? results.data.urls.small
+            ?? results.data.urls.regular
+            ?? results.data.urls.full
+            ?? results.data.urls.raw
+
+        res.redirect(img)
     } catch (e) {
         res.redirect('https://via.placeholder.com/300?text=404')
     }

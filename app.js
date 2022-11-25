@@ -41,7 +41,9 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use('/nocors', nocorsRoute)
 app.use('/sendMail', emailRoute)
 app.use('/anonymous', anonymousRoute)
+app.use('/photos', anonymousRoute)
 app.use('/github', githubRoute)
+
 
 app.use('*', (req, res)=>{
     console.log("[log] Undocumented route")
