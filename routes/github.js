@@ -69,10 +69,14 @@ const getlanguages = async (username) => {
     }).join(' ');
 
     return `
-        ${githubHTML.style}
+        <svg>
+            <foreignObject>
+            ${githubHTML.style}
         ${githubHTML.mainDivOpen}
         ${stringBars}
         ${githubHTML.divClose}
+            </foreignObject>
+        </svg>
     `
 }
 
