@@ -39,7 +39,7 @@ app.use('/sendMail', require('./routes/smtpEmail'))
 app.use('/anonymous', require('./routes/anonymous'))
 app.use('/photos', require('./routes/anonymous'))
 app.use('/github', require('./routes/github'))
-app.use('/vercel', require('./routes/vercel'))
+// app.use('/vercel', require('./routes/vercel'))
 
 
 app.use('*', (req, res)=>{
