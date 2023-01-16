@@ -68,7 +68,7 @@ const getlanguages = async (username) => {
         `
     }).join(' ');
     return `
-        <svg style="width: 100%;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width: 100%;">
             <foreignObject style="width: 100%; height: 100%">
             ${githubHTML.style}
             ${githubHTML.mainDivOpen}
@@ -93,7 +93,7 @@ app.get('/getrepos', async (req, res) => {
 
 app.get('/getlanguages', async (req, res) => {
     try {
-        res.header('Content-Type', 'image/svg+xml')
+        res.header('Content-Type', 'image/svg+xml; charset=utf-8')
         res.send(await getlanguages(req.query.username));
     } catch (e) {
         console.log(e.message)

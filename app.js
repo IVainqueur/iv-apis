@@ -3,10 +3,6 @@ const app = express()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const {_pick, _remove, arr_remove} = require('./oneliners')
-const nocorsRoute = require('./routes/nocors')
-const emailRoute = require('./routes/smtpEmail')
-const anonymousRoute = require('./routes/anonymous')
-const githubRoute = require('./routes/github')
 
 /* =============== SWAGGERS ================ */
 const swaggerUi = require('swagger-ui-express');
@@ -38,11 +34,12 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 
-app.use('/nocors', nocorsRoute)
-app.use('/sendMail', emailRoute)
-app.use('/anonymous', anonymousRoute)
-app.use('/photos', anonymousRoute)
-app.use('/github', githubRoute)
+app.use('/nocors', require('./routes/nocors'))
+app.use('/sendMail', require('./routes/smtpEmail'))
+app.use('/anonymous', require('./routes/anonymous'))
+app.use('/photos', require('./routes/anonymous'))
+app.use('/github', require('./routes/github'))
+app.use('/vercel', require('./routes/vercel'))
 
 
 app.use('*', (req, res)=>{
