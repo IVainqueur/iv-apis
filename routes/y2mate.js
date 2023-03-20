@@ -8,9 +8,9 @@ app.get('/versions', (req, res) => {
         Headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: {
+        body: JSON.stringify({
             k_query: `https://www.youtube.com/watch?v=${id}`,
-        }
+        })
     }).then(({ data }) => {
         res.send(data)
     }).catch((e) => {
@@ -26,10 +26,10 @@ app.get('/download', (req, res) => {
         Headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: {
+        body: JSON.stringify({
             vid: id,
             k: y2mate_id,
-        }
+        })
     }).then(({ data }) => {
         res.send(data)
     }
