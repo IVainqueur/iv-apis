@@ -28,11 +28,6 @@ app.get('/downloadlink', (req, res) => {
     const { y2mate_id, id, download } = req.query;
     if (!y2mate_id || !id) return res.status(400).send("No id and/or y2mate_id provided");
 
-    console.log({
-        y2mate_id: encodeURIComponent(y2mate_id),
-        id: encodeURIComponent(id)
-    })
-
     axios.request(
         {
             url: 'https://www.y2mate.com/mates/convertV2/index',
@@ -44,7 +39,6 @@ app.get('/downloadlink', (req, res) => {
         }
     )
     .then(({ data }) => {
-        console.log(data)
         if(download && data.status === "ok") {
             return res.redirect(data.dlink)
         }
