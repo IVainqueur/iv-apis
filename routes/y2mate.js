@@ -2,9 +2,9 @@ const app = require('express').Router()
 const axios = require('axios');
 
 app.get('/versions', (req, res) => {
-    const { id } = req.query;
-    console.log("[log] Versions requested for ID: " + `\x1B[33m\x1B[1m${id}\x1B[0m`)
-    if (!id) return res.status(400).send("No ID provided");
+    const { id: link } = req.query;
+    console.log("[log] Versions requested for Link: " + `\x1B[33m\x1B[1m${link}\x1B[0m`)
+    if (!link) return res.status(400).send("No Link provided");
 
     axios.request(
         {
@@ -13,7 +13,7 @@ app.get('/versions', (req, res) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            data: `k_query=https://www.youtube.com/watch?v=${id}`,
+            data: `k_query=${link}`,
         }).then(({ data }) => {
             res.send(data ?? {
                 code: "#Error",
