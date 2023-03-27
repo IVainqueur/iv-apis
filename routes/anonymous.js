@@ -16,6 +16,7 @@ require('dotenv').config()
 const RANDOM_PHOTOS_URL = `https://api.unsplash.com/photos/random?client_id=${process.env.CLIENT_ID}&count=20`
 const RANDOM_TEXT_URL = `http://loripsum.net/api`
 
+mongo.set('strictQuery', true)
 mongo.connect(process.env.MONGO_URI, (err) => {
     if (err) return console.log('\x1B[31m\x1B[1m[LOG]: Failed to connect to DB\x1B[0m');
     console.log('\x1B[32m\x1B[1m[LOG] Connected to DB\x1B[0m')

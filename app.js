@@ -44,7 +44,7 @@ app.use('/y2mate', require('./routes/y2mate'))
 
 app.use('*', (req, res)=>{
     console.log("[log] Undocumented route")
-    res.send({code: "#Undocumented", message: "Nothing on this route yet"})
+    res.json({code: "#Undocumented", message: "Nothing on this route yet"})
 })
 
 
