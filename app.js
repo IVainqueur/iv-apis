@@ -40,6 +40,7 @@ app.use('/anonymous', require('./routes/anonymous'))
 app.use('/photos', require('./routes/anonymous'))
 app.use('/github', require('./routes/github'))
 app.use('/y2mate', require('./routes/y2mate'))
+app.use('/zipped', require('./routes/zipped'))
 
 
 app.use('*', (req, res)=>{
