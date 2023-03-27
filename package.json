@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "start:dev": "sudo node app.js",
+    "start:dev-win": "nodemon app.js",
     "start:dev-watch": "sudo nodemon app.js"
   },
   "keywords": [],
@@ -15,13 +16,14 @@
   "dependencies": {
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
-    "canvas": "^2.6.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "jszip": "^3.10.1",
     "mongoose": "^6.5.0",
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.5",
+    "short-uuid": "^4.2.2",
     "swagger-ui-express": "^4.5.0"
   }
 }
