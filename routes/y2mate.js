@@ -2,7 +2,7 @@ const app = require('express').Router()
 const axios = require('axios');
 
 app.get('/versions', (req, res) => {
-    const { id: link } = req.query;
+    const { link } = req.query;
     console.log("[log] Versions requested for Link: " + `\x1B[33m\x1B[1m${link}\x1B[0m`)
     if (!link) return res.status(400).send("No Link provided");
 
