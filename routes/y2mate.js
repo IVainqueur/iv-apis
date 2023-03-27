@@ -39,6 +39,7 @@ app.get('/downloadlink', (req, res) => {
         }
     )
     .then(({ data }) => {
+        if(data.status !== "ok") throw new Error('Error while getting download link')
         if(download && data.status === "ok") {
             return res.redirect(data.dlink)
         }
