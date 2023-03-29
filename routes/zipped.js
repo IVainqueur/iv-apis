@@ -35,17 +35,31 @@ app.post('/zip', async (req, res) => {
         .pipe(fs.createWriteStream(zipDir))
         .on('finish', function () {
             console.log("[log] zip file generated")
-            res.set('Content-Type', 'application/zip');
-            res.set('Content-Disposition', `attachment; filename=${zipDir}`);
-            const filestream = fs.createReadStream(zipDir);
-            filestream.pipe(res);
+            res.redirect(`/download/${zipName}.zip`)
 
-            filestream.on('end', () => {
+            setTimeout(() => {
+                if (!fs.existsSync(`../tmp/${folderName}`)) return
                 fs.rmSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true })
-            })
+            }, 1000 * 60 * 10)
+
         });
 
 
 });
+
+app.get('/download/:folder/:file', (req, res) => {
+    const { folder, file } = req.params;
+    const fileDir = path.join(__dirname, `../tmp/${folder}/${file}`);
+    if (!fs.existsSync(fileDir)) return res.status(404).send("File not found")
+
+    res.set('Content-Type', 'application/zip');
+    res.set('Content-Disposition', `attachment; filename=${fileDir}`);
+    const filestream = fs.createReadStream(fileDir);
+    filestream.pipe(res);
+
+    filestream.on('end', () => {
+        fs.rmSync(path.join(__dirname, `../tmp/${folder}`), { recursive: true })
+    })
+})
 
 module.exports = app
