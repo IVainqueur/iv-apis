@@ -9,6 +9,7 @@ const JSZip = require('jszip');
 
 app.post('/zip', async (req, res) => {
     const { items, zip_name } = req.body;
+    const { download } = req.query;
 
     if (!items) return res.status(400).send("No items provided")
     if (!Array.isArray(items)) return res.status(400).send("Items must be an array")
@@ -23,10 +24,14 @@ app.post('/zip', async (req, res) => {
     for (const item of items) {
         if (!item.url.startsWith("https://") && !item.url.startsWith("http://")) continue;
 
-        const response = await axios.get(item.url, { responseType: 'arraybuffer' })
-        zip.file(item.name, response.data)
+        try {
+            const response = await axios.get(item.url, { responseType: 'arraybuffer' })
+            zip.file(item.name || uuid(), response.data)
 
-        console.log("[log] got item: " + `\x1B[33m\x1B[1m${item}\x1B[0m`)
+            console.log("[log] got item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
+        } catch (e) {
+            console.log("[log] error while getting item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
+        }
     }
     console.log('[log] the items array in the body -> ', items)
 
@@ -35,11 +40,17 @@ app.post('/zip', async (req, res) => {
         .pipe(fs.createWriteStream(zipDir))
         .on('finish', function () {
             console.log("[log] zip file generated")
-            res.redirect(`/download/${zipName}.zip`)
+
+            if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip`)
+            else res.send(`/zipped/download/${folderName}/${zipName}.zip`)
 
             setTimeout(() => {
-                if (!fs.existsSync(`../tmp/${folderName}`)) return
-                fs.rmSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true })
+                try {
+                    if (!fs.existsSync(`../tmp/${folderName}`)) return
+                    fs.rmSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true, force: true })
+                } catch (e) {
+
+                }
             }, 1000 * 60 * 10)
 
         });
@@ -58,7 +69,11 @@ app.get('/download/:folder/:file', (req, res) => {
     filestream.pipe(res);
 
     filestream.on('end', () => {
-        fs.rmSync(path.join(__dirname, `../tmp/${folder}`), { recursive: true })
+        try {
+            fs.rmSync(path.join(__dirname, `../tmp/${folder}`), { recursive: true, force: true })
+        } catch (e) {
+
+        }
     })
 })
 
