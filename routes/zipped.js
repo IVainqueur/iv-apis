@@ -8,7 +8,8 @@ const uuid = require('short-uuid').generate;
 const JSZip = require('jszip');
 
 app.post('/zip', async (req, res) => {
-    const { items, zip_name } = req.body;
+    try{
+        const { items, zip_name } = req.body;
     const { download } = req.query;
 
     if (!items) return res.status(400).send("No items provided")
@@ -22,11 +23,12 @@ app.post('/zip', async (req, res) => {
     const zip = new JSZip();
 
     for (const item of items) {
+        if(!item.url) continue;
         if (!item.url.startsWith("https://") && !item.url.startsWith("http://")) continue;
 
         try {
             const response = await axios.get(item.url, { responseType: 'arraybuffer' })
-            zip.file(item.name || uuid(), response.data)
+            zip.file(encodeURIComponent(item.name) || uuid(), response.data)
 
             console.log("[log] got item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
         } catch (e) {
@@ -55,6 +57,10 @@ app.post('/zip', async (req, res) => {
 
         });
 
+    }catch(e) {
+        console.log("[log] error while zipping: " + `\x1B[33m\x1B[1m${e.message}\x1B[0m`)
+        res.send("Error while zipping")
+    }
 
 });
 

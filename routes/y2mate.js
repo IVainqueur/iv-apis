@@ -63,12 +63,14 @@ app.get('/downloadlink', (req, res) => {
 app.get("/downloadplaylist", async (req, res) => {
     let { link, quality } = req.query;
 
+    const HOME_URI = req.protocol + '://' + req.get('host')
+    
     if (!link) return res.status(400).send("No Link provided");
     if (!QUALITIES.includes(quality)) quality = "mp3";
 
     try {
         const playlist = await axios.request({
-            url: `/y2mate/versions?link=${link}`,
+            url: `${HOME_URI}/y2mate/versions?link=${link}`,
             method: 'GET',
         })
 
@@ -82,7 +84,7 @@ app.get("/downloadplaylist", async (req, res) => {
             let done = 0;
             videos.forEach((video, index) => {
                 axios.request({
-                    url: `/y2mate/versions?link=https://youtube.com/watch?v=${video.id}`,
+                    url: `${HOME_URI}/y2mate/versions?link=https://youtube.com/watch?v=${video.id}`,
                     method: 'GET',
                 })
                     .then(({ data }) => {
@@ -93,7 +95,7 @@ app.get("/downloadplaylist", async (req, res) => {
                             const k = Object.values(mp3s).find(el => el.f === "mp3");
                             if (!k) throw new Error("No mp3 found")
                             return axios.request({
-                                url: `/y2mate/downloadlink?y2mate_id=${k.k}&id=${video.id}`,
+                                url: `${HOME_URI}/y2mate/downloadlink?y2mate_id=${k.k}&id=${video.id}`,
                                 method: 'GET'
                             })
                         }
@@ -106,7 +108,7 @@ app.get("/downloadplaylist", async (req, res) => {
                         }
                         if (k === "") k = Object.values(mp4s)[0].k;
                         return axios.request({
-                            url: `/y2mate/downloadlink?y2mate_id=${k}&id=${video.id}`,
+                            url: `${HOME_URI}/y2mate/downloadlink?y2mate_id=${k}&id=${video.id}`,
                             method: 'GET'
                         })
 
@@ -132,7 +134,7 @@ app.get("/downloadplaylist", async (req, res) => {
 
 
         axios.request({
-            url: "/zipped/zip",
+            url: `${HOME_URI}/zipped/zip`,
             method: "POST",
             data: {
                 zipName,
