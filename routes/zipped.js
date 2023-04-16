@@ -28,14 +28,13 @@ app.post('/zip', async (req, res) => {
 
         try {
             const response = await axios.get(item.url, { responseType: 'arraybuffer' })
-            zip.file(encodeURIComponent(item.name) || uuid(), response.data)
+            zip.file((item.name || uuid()).replace(/\//g, '\\'), response.data)
 
             console.log("[log] got item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
         } catch (e) {
             console.log("[log] error while getting item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
         }
     }
-    console.log('[log] the items array in the body -> ', items)
 
     const zipDir = path.join(__dirname, `../tmp/${folderName}/${zipName}.zip`)
     zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
