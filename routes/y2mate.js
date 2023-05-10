@@ -61,10 +61,10 @@ app.get('/downloadlink', (req, res) => {
 })
 
 app.get("/downloadplaylist", async (req, res) => {
-    let { link, quality } = req.query;
+    let { link, quality, albumName } = req.query;
 
     const HOME_URI = req.protocol + '://' + req.get('host')
-    
+
     if (!link) return res.status(400).send("No Link provided");
     if (!QUALITIES.includes(quality)) quality = "mp3";
 
@@ -91,6 +91,13 @@ app.get("/downloadplaylist", async (req, res) => {
                         if (data.status !== "ok") throw new Error('Error while getting download link')
                         const { mp4: mp4s, mp3: mp3s } = data.links;
 
+                        videos[index].tags = {
+                            title: video.name,
+                            artist: data.a,
+                            album: albumName ?? playlist.data.title,
+                            APIC:  `https://i3.ytimg.com/vi/${data.vid}/mqdefault.jpg`
+                        }
+
                         if (quality === "mp3") {
                             const k = Object.values(mp3s).find(el => el.f === "mp3");
                             if (!k) throw new Error("No mp3 found")
@@ -107,6 +114,7 @@ app.get("/downloadplaylist", async (req, res) => {
                             }
                         }
                         if (k === "") k = Object.values(mp4s)[0].k;
+
                         return axios.request({
                             url: `${HOME_URI}/y2mate/downloadlink?y2mate_id=${k}&id=${video.id}`,
                             method: 'GET'
@@ -117,6 +125,7 @@ app.get("/downloadplaylist", async (req, res) => {
                         if (data.status !== "ok") throw new Error('Error while getting download link')
                         videos[index].url = data.dlink
                         videos[index].name += "" + (quality === "mp3" ? ".mp3" : ".mp4")
+
                     })
                     .catch((e) => {
                         console.log("ERROR: " + e.message)
@@ -131,7 +140,7 @@ app.get("/downloadplaylist", async (req, res) => {
             })
         }))
 
-
+        console.log("Here are the video tags: ", videos.map(el => el.tags))
 
         axios.request({
             url: `${HOME_URI}/zipped/zip`,

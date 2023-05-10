@@ -6,57 +6,73 @@ const path = require('path');
 const { default: axios } = require('axios');
 const uuid = require('short-uuid').generate;
 const JSZip = require('jszip');
+const NodeID3 = require('node-id3');
 
 app.post('/zip', async (req, res) => {
-    try{
+    try {
         const { items, zip_name } = req.body;
-    const { download } = req.query;
+        const { download } = req.query;
 
-    if (!items) return res.status(400).send("No items provided")
-    if (!Array.isArray(items)) return res.status(400).send("Items must be an array")
-    if (items.length < 1) return res.status(400).send("Items array must have atleast one item")
+        if (!items) return res.status(400).send("No items provided")
+        if (!Array.isArray(items)) return res.status(400).send("Items must be an array")
+        if (items.length < 1) return res.status(400).send("Items array must have atleast one item")
 
-    const folderName = uuid();
-    const zipName = zip_name || folderName;
-    fs.mkdirSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true })
+        const folderName = uuid();
+        const zipName = zip_name || folderName;
+        fs.mkdirSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true })
 
-    const zip = new JSZip();
+        const zip = new JSZip();
 
-    for (const item of items) {
-        if(!item.url) continue;
-        if (!item.url.startsWith("https://") && !item.url.startsWith("http://")) continue;
+        for (const item of items) {
+            if (!item.url) continue;
+            if (!item.url.startsWith("https://") && !item.url.startsWith("http://")) continue;
 
-        try {
-            const response = await axios.get(item.url, { responseType: 'arraybuffer' })
-            zip.file((item.name || uuid()).replace(/\//g, '\\'), response.data)
+            try {
+                const response = await axios.get(item.url, { responseType: 'arraybuffer' })
+                if(item.tags) {
+                    if(!item.tags.title) item.tags.title = item.name
+                    if(!item.tags.artist) item.tags.artist = "Unknown"
 
-            console.log("[log] got item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
-        } catch (e) {
-            console.log("[log] error while getting item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
-        }
-    }
-
-    const zipDir = path.join(__dirname, `../tmp/${folderName}/${zipName}.zip`)
-    zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
-        .pipe(fs.createWriteStream(zipDir))
-        .on('finish', function () {
-            console.log("[log] zip file generated")
-
-            if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip`)
-            else res.send(`/zipped/download/${folderName}/${zipName}.zip`)
-
-            setTimeout(() => {
-                try {
-                    if (!fs.existsSync(`../tmp/${folderName}`)) return
-                    fs.rmSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true, force: true })
-                } catch (e) {
-
+                    // Download item.APIC image and save it in the same folder as the zip
+                    if(item.tags.APIC) {
+                        const image = await axios.get(item.tags.APIC, { responseType: 'arraybuffer' })
+                        const uniqueName = uuid()
+                        fs.writeFileSync(path.join(__dirname, `../tmp/${folderName}/${uniqueName}.png`), image.data)
+                        item.tags.APIC = path.join(__dirname, `../tmp/${folderName}/${uniqueName}.png`)
+                    }
                 }
-            }, 1000 * 60 * 10)
+                zip.file(
+                    (item.name.replace(/\//g, '\\') || uuid()),
+                    item.tags ? NodeID3.write(item.tags, response.data) : response.data
+                )
 
-        });
+                console.log("[log] got item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
+            } catch (e) {
+                console.log("[log] error while getting item: " + `\x1B[33m\x1B[1m${item.name}\x1B[0m`)
+            }
+        }
 
-    }catch(e) {
+        const zipDir = path.join(__dirname, `../tmp/${folderName}/${zipName}.zip`)
+        zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+            .pipe(fs.createWriteStream(zipDir))
+            .on('finish', function () {
+                console.log("[log] zip file generated")
+
+                if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip`)
+                else res.send(`/zipped/download/${folderName}/${zipName}.zip`)
+
+                setTimeout(() => {
+                    try {
+                        if (!fs.existsSync(`../tmp/${folderName}`)) return
+                        fs.rmSync(path.join(__dirname, `../tmp/${folderName}`), { recursive: true, force: true })
+                    } catch (e) {
+
+                    }
+                }, 1000 * 60 * 10)
+
+            });
+
+    } catch (e) {
         console.log("[log] error while zipping: " + `\x1B[33m\x1B[1m${e.message}\x1B[0m`)
         res.send("Error while zipping")
     }
