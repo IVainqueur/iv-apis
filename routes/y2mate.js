@@ -92,7 +92,7 @@ app.get("/downloadplaylist", async (req, res) => {
                         const { mp4: mp4s, mp3: mp3s } = data.links;
 
                         videos[index].tags = {
-                            title: video.name,
+                            title: video.name.replace(/(\s?\(?\s?(?:Official)(?:lyric)??.*?(?:audio|video)\)?\s?)/gi, ''),
                             artist: data.a,
                             album: albumName ?? playlist.data.title,
                             APIC:  `https://i3.ytimg.com/vi/${data.vid}/mqdefault.jpg`
