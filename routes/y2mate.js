@@ -95,7 +95,7 @@ app.get("/downloadplaylist", async (req, res) => {
                             title: video.name.replace(/(\s?\(?\s?(?:Official)(?:lyric)??.*?(?:audio|video)\)?\s?)/gi, ''),
                             artist: data.a,
                             album: albumName ?? playlist.data.title,
-                            APIC:  `https://i3.ytimg.com/vi/${data.vid}/mqdefault.jpg`
+                            APIC:  `https://nigen.vercel.app/api/cropImage?baseWidth=500&aspectRatio=1:1&imgURL=https://i3.ytimg.com/vi/${data.vid}/maxresdefault.jpg`
                         }
 
                         if (quality === "mp3") {
