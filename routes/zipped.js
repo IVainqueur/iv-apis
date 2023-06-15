@@ -58,7 +58,7 @@ app.post('/zip', async (req, res) => {
             .on('finish', function () {
                 console.log("[log] zip file generated")
 
-                if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip`)
+                if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip?filename=${zipName}.zip`)
                 else res.send(`/zipped/download/${folderName}/${zipName}.zip`)
 
                 setTimeout(() => {
@@ -80,12 +80,13 @@ app.post('/zip', async (req, res) => {
 });
 
 app.get('/download/:folder/:file', (req, res) => {
+    const {filename} = req.query;
     const { folder, file } = req.params;
     const fileDir = path.join(__dirname, `../tmp/${folder}/${file}`);
     if (!fs.existsSync(fileDir)) return res.status(404).send("File not found")
 
     res.set('Content-Type', 'application/zip');
-    res.set('Content-Disposition', `attachment; filename=${fileDir}`);
+    res.set('Content-Disposition', `attachment; filename=${filename ?? fileDir}`);
     const filestream = fs.createReadStream(fileDir);
     filestream.pipe(res);
 

@@ -146,7 +146,7 @@ app.get("/downloadplaylist", async (req, res) => {
             url: `${HOME_URI}/zipped/zip`,
             method: "POST",
             data: {
-                zipName,
+                zip_name: zipName,
                 items: videos
             }
         })
