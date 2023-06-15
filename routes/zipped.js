@@ -86,7 +86,7 @@ app.get('/download/:folder/:file', (req, res) => {
     if (!fs.existsSync(fileDir)) return res.status(404).send("File not found")
 
     res.set('Content-Type', 'application/zip');
-    res.set('Content-Disposition', `attachment; filename=${filename ?? fileDir}`);
+    res.set('Content-Disposition', `attachment; filename=${filename + '.zip' ?? fileDir}`);
     const filestream = fs.createReadStream(fileDir);
     filestream.pipe(res);
 
