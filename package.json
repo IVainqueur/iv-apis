@@ -24,6 +24,7 @@
     "node-fetch": "^2.6.7",
     "node-id3": "^0.2.6",
     "nodemailer": "^6.7.5",
+    "request": "^2.88.2",
     "short-uuid": "^4.2.2",
     "swagger-ui-express": "^4.5.0"
   }
