@@ -56,7 +56,10 @@ app.post('/zip', async (req, res) => {
         zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
             .pipe(fs.createWriteStream(zipDir))
             .on('finish', function () {
-                console.log("[log] zip file generated")
+                const stats = fs.statSync(zipDir)
+                const fileSizeInBytes = stats.size
+                const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024)
+                console.log("[log] zip file size: " + `\x1B[33m\x1B[1m${fileSizeInMegabytes.toFixed(2)} MB\x1B[0m`)
 
                 if (download) res.redirect(`/zipped/download/${folderName}/${zipName}.zip?filename=${zipName}.zip`)
                 else res.send(`/zipped/download/${folderName}/${zipName}.zip`)
