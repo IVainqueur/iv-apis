@@ -31,6 +31,15 @@ async function sendResetPassword(from, to, subject, text, html) {
 
 app.post('/', async ({body}, res)=>{
     try{
+      /* Sample body:
+        {
+          "from": "dmis@rmb.gov.rw",
+          "to": "mugabo.eric@gmail.com",
+          "subject": "Test Email",
+          "text": "This is a test email",
+          "html": "<p>This is a test email</p>"
+        }
+      */
         let emailResponse = await sendResetPassword(body.from, body.to, body.subject, body.text, body.html);
         res.json({code: "#Success", result: emailResponse});
     }catch(e){
