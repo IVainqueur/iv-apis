@@ -8,7 +8,8 @@
     "start": "node app.js",
     "start:dev": "sudo nodemon app.js",
     "start:dev-win": "nodemon app.js",
-    "start:dev-watch": "sudo nodemon app.js"
+    "start:dev-watch": "sudo nodemon app.js",
+    "build": "echo no build needed"
   },
   "keywords": [],
   "author": "",
