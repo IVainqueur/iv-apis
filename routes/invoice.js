@@ -1,5 +1,16 @@
 const app = require('express').Router()
 
+app.get('/', async (req, res) => {
+    const { id, amount } = req.query
+    
+    if(!id || !amount) return res.status(400).send("Missing required parameters")
+
+    const isMerchant = Boolean(id.length < 10)
+
+    res.redirect(`tel:*182*${isMerchant ? '8' : '1'}*1*${id}*${amount}#`)
+    
+})
+
 app.get('/:id/:amount', async (req, res) => {
     const { id, amount } = req.params
     
