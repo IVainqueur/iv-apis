@@ -4,25 +4,79 @@ const { _pick, _remove, arr_remove } = require("../oneliners");
 const fetch = require("node-fetch");
 const { default: axios } = require("axios");
 const request = require("request");
+const multer = require("multer");
+const FormData = require("form-data");
 
-app.post("/", async (req, res) => {
+// Configure multer for handling multipart form data
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+});
+
+app.post("/", upload.any(), async (req, res) => {
   let body = _pick(["headers", "method", "url", "body"], req.body);
   let options = {
     method: body.method ? body.method : "GET",
-    headers: body.headers,
-    body: JSON.stringify(body.body),
+    headers: body.headers || {},
   };
-  console.log(options);
+
+  // Handle different content types
+  const contentType = req.headers["content-type"] || "";
+  
+  if (contentType.includes("multipart/form-data")) {
+    const formData = new FormData();
+    
+    // Add files from multer
+    if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+        formData.append(file.fieldname, file.buffer, {
+          filename: file.originalname,
+          contentType: file.mimetype
+        });
+      });
+    }
+    
+    // Add regular form fields
+    Object.keys(req.body).forEach(key => {
+      if (key !== "headers" && key !== "method" && key !== "url" && key !== "body") {
+        formData.append(key, req.body[key]);
+      }
+    });
+
+    options.body = formData;
+    options.headers = {
+      ...options.headers,
+      ...formData.getHeaders()
+    };
+  } else if (contentType.includes("application/x-www-form-urlencoded")) {
+    const formData = new URLSearchParams();
+    Object.keys(req.body).forEach(key => {
+      if (key !== "headers" && key !== "method" && key !== "url" && key !== "body") {
+        formData.append(key, req.body[key]);
+      }
+    });
+    options.body = formData.toString();
+    options.headers["content-type"] = "application/x-www-form-urlencoded";
+  } else {
+    // Handle JSON data as before
+    options.body = JSON.stringify(body.body);
+  }
+
+  // console.log("Request options:", options);
   let response;
   try {
     response = await fetch(body.url, options);
   } catch (e) {
-    res.json({ code: "#Error", message: e });
+    return res.status(500).json({ code: "#Error", message: e.message });
   }
+
   let headers = {};
   for (let pair of response.headers.entries()) {
     headers[pair[0]] = pair[1];
   }
+
   let data = await response.text();
   try {
     let toSend = JSON.parse(data);
@@ -31,6 +85,7 @@ app.post("/", async (req, res) => {
     res.send({
       data,
       isJson: false,
+      headers
     });
   }
 });
