@@ -43,6 +43,7 @@ app.use('/github', require('./routes/github'))
 app.use('/y2mate', require('./routes/y2mate'))
 app.use('/zipped', require('./routes/zipped'))
 app.use('/invoice', require('./routes/invoice'))
+app.use('/test', require('./routes/test'))
 
 
 app.use('*', (req, res)=>{
