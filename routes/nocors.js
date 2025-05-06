@@ -161,7 +161,7 @@ app.post("/", upload.any(), async (req, res) => {
 });
 
 app.all("/_/*", (req, res) => {
-  const url = req.originalUrl.slice("/nocors/_/".length).replace(/%20/g, "");
+  const url = decodeURIComponent(req.originalUrl.slice("/nocors/_/".length).replace(/%20/g, ""));
 
   request(
     {
