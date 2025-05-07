@@ -7,6 +7,7 @@ const {_pick, _remove, arr_remove} = require('./oneliners')
 /* =============== SWAGGERS ================ */
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swaggers/ekosora/swagger.json');
+const { connectToMongo } = require('./utils')
 const swaggerOptions = {
     explorer: true,
     customJs: '/swaggers/ekosora/customSwaggerjs.js',
@@ -44,6 +45,7 @@ app.use('/y2mate', require('./routes/y2mate'))
 app.use('/zipped', require('./routes/zipped'))
 app.use('/invoice', require('./routes/invoice'))
 app.use('/test', require('./routes/test'))
+app.use('/mongo', require('./routes/mongo'))
 
 
 app.use('*', (req, res)=>{
@@ -54,4 +56,5 @@ app.use('*', (req, res)=>{
 
 app.listen(process.env.PORT, ()=>{
     console.log("[log]: Server is up at PORT ", process.env.PORT)
+    connectToMongo()
 })
