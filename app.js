@@ -7,7 +7,7 @@ const {_pick, _remove, arr_remove} = require('./oneliners')
 /* =============== SWAGGERS ================ */
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swaggers/ekosora/swagger.json');
-const { connectToMongo } = require('./utils')
+const { connectToMongo, connectToDBMiddleware } = require('./utils')
 const swaggerOptions = {
     explorer: true,
     customJs: '/swaggers/ekosora/customSwaggerjs.js',
@@ -56,5 +56,4 @@ app.use('*', (req, res)=>{
 
 app.listen(process.env.PORT, ()=>{
     console.log("[log]: Server is up at PORT ", process.env.PORT)
-    connectToMongo()
 })

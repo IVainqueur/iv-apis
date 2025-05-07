@@ -19,7 +19,13 @@ const connectToMongo = async () => {
   }
 };
 
+const connectToDBMiddleware = async (req, res, next) => {
+  await connectToMongo();
+  next();
+};
+
 module.exports = {
   parseJson,
   connectToMongo,
+  connectToDBMiddleware,
 };
