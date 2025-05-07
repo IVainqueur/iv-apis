@@ -10,63 +10,79 @@ function withMongo(handler) {
       await connectToMongo();
       await handler(req, res);
     } catch (error) {
+      console.log(error);
       // If the handler doesn't handle errors, send a generic error
       if (!res.headersSent) {
         res.status(500).json({ message: "Internal server error", error });
       }
     } finally {
-      try { await mongoose.connection.close(); } catch (e) {}
+      try {
+        await mongoose.connection.close();
+        console.log("MongoDB connection closed after request");
+      } catch (e) {}
     }
   };
 }
 
 // check if collection exists
-router.get("/check-collection", withMongo(async (req, res) => {
-  const { collection } = req.query;
-  const collectionExists = await mongoose.connection.db
-    .listCollections({ name: collection.toLowerCase() })
-    .toArray();
-  res.json({ collectionExists });
-}));
+router.get(
+  "/check-collection",
+  withMongo(async (req, res) => {
+    const { collection } = req.query;
+    const collectionExists = await mongoose.connection.db
+      .listCollections({ name: collection.toLowerCase() })
+      .toArray();
+    res.json({ collectionExists });
+  })
+);
 
 // create collection
-router.post("/create-collection", withMongo(async (req, res) => {
-  const { collection: _collection, schema } = req.body;
-  const collection = _collection.toLowerCase();
+router.post(
+  "/create-collection",
+  withMongo(async (req, res) => {
+    const { collection: _collection, schema } = req.body;
+    const collection = _collection.toLowerCase();
 
-  // check if collection exists
-  const collectionExists = await mongoose.connection.db
-    .listCollections({ name: collection })
-    .toArray();
-  if (collectionExists.length > 0) {
-    return res.status(400).json({ message: "Collection already exists" });
-  }
+    // check if collection exists
+    const collectionExists = await mongoose.connection.db
+      .listCollections({ name: collection })
+      .toArray();
+    if (collectionExists.length > 0) {
+      return res.status(400).json({ message: "Collection already exists" });
+    }
 
-  // create collection through mongoose schema
-  mongoose.model(collection, schema);
-  res.json({ message: "Collection created successfully" });
-}));
+    // create collection through mongoose schema
+    mongoose.model(collection, schema);
+    res.json({ message: "Collection created successfully" });
+  })
+);
 
 // get all collections
-router.get("/get-collections", withMongo(async (req, res) => {
-  const collections = await mongoose.connection.db
-    .listCollections()
-    .toArray();
-  res.json({ collections });
-}));
+router.get(
+  "/get-collections",
+  withMongo(async (req, res) => {
+    const collections = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+    res.json({ collections });
+  })
+);
 
 // add document to collection
-router.post("/add-document", withMongo(async (req, res) => {
-  const { collection, document } = req.body;
-  const collectionName = collection.toLowerCase();
-  // Use the MongoDB collection API directly instead of mongoose model
-  const result = await mongoose.connection.db
-    .collection(collectionName)
-    .insertOne(document);
-  res.json({ 
-    message: "Document added successfully", 
-    insertedId: result.insertedId 
-  });
-}));
+router.post(
+  "/add-document",
+  withMongo(async (req, res) => {
+    const { collection, document } = req.body;
+    const collectionName = collection.toLowerCase();
+    // Use the MongoDB collection API directly instead of mongoose model
+    const result = await mongoose.connection.db
+      .collection(collectionName)
+      .insertOne(document);
+    res.json({
+      message: "Document added successfully",
+      insertedId: result.insertedId,
+    });
+  })
+);
 
 module.exports = router;
