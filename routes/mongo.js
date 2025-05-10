@@ -85,4 +85,23 @@ router.post(
   })
 );
 
+// get all documents from collection
+router.post(
+  "/get-documents",
+  withMongo(async (req, res) => {
+    const { collection, filter } = req.body;
+    const collectionName = collection.toLowerCase();
+    
+    // Use the provided filter or default to empty object
+    const queryFilter = filter || {};
+    
+    const documents = await mongoose.connection.db
+      .collection(collectionName)
+      .find(queryFilter)
+      .toArray();
+    res.json({ documents });
+  })
+);
+
+
 module.exports = router;
