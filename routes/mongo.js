@@ -89,15 +89,15 @@ router.post(
 router.post(
   "/get-documents",
   withMongo(async (req, res) => {
-    const { collection, filter } = req.body;
+    const { collection, filter, sort } = req.body;
     const collectionName = collection.toLowerCase();
-    
-    // Use the provided filter or default to empty object
     const queryFilter = filter || {};
-    
+    const sortOption = sort || {};
+
     const documents = await mongoose.connection.db
       .collection(collectionName)
       .find(queryFilter)
+      .sort(sortOption)
       .toArray();
     res.json({ documents });
   })
