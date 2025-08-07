@@ -47,6 +47,10 @@ app.use('/invoice', require('./routes/invoice'))
 app.use('/test', require('./routes/test'))
 app.use('/mongo', require('./routes/mongo'))
 
+app.get('/.well-known/apple-app-site-association', (req, res)=>{
+    res.sendFile(__dirname + '/apple-app-site-association')
+})
+
 
 app.use('*', (req, res)=>{
     console.log("[log] Undocumented route")

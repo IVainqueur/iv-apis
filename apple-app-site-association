@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "7Q4QU89WQ3.org.reactjs.native.example.MomoSummarizer",
+        "paths": [
+          "/invoice/*"
+        ]
+      }
+    ]
+  }
+}
