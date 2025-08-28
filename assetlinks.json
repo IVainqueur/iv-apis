@@ -1,0 +1,15 @@
+[
+    {
+      "relation": [
+        "delegate_permission/common.handle_all_urls",
+        "delegate_permission/common.get_login_creds"
+      ],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.momosummarizer",
+        "sha256_cert_fingerprints": [
+          "65:43:7C:62:DA:FF:97:4C:4C:28:37:50:5A:4F:84:8F:7E:4F:4F:FF:E4:67:8D:72:18:EE:20:03:FB:F7:A5:E5"
+        ]
+      }
+    }
+  ]

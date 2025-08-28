@@ -46,9 +46,14 @@ app.use('/zipped', require('./routes/zipped'))
 app.use('/invoice', require('./routes/invoice'))
 app.use('/test', require('./routes/test'))
 app.use('/mongo', require('./routes/mongo'))
+app.use('/charts', require('./routes/sample-charts'))
 
 app.get('/.well-known/apple-app-site-association', (req, res)=>{
     res.sendFile(__dirname + '/apple-app-site-association')
+})
+
+app.get('/.well-known/assetlinks.json', (req, res)=>{
+    res.sendFile(__dirname + '/assetlinks.json')
 })
 
 
