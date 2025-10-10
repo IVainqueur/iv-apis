@@ -38,8 +38,6 @@ app.use(bodyParser.raw())
 
 app.use('/nocors', require('./routes/nocors'))
 app.use('/sendMail', require('./routes/smtpEmail'))
-// app.use('/anonymous', require('./routes/anonymous'))
-// app.use('/photos', require('./routes/anonymous'))
 app.use('/github', require('./routes/github'))
 app.use('/y2mate', require('./routes/y2mate'))
 app.use('/zipped', require('./routes/zipped'))
@@ -54,6 +52,13 @@ app.get('/.well-known/apple-app-site-association', (req, res)=>{
 
 app.get('/.well-known/assetlinks.json', (req, res)=>{
     res.sendFile(__dirname + '/assetlinks.json')
+})
+
+app.get('/manie/sms-formats', (req, res)=>{
+    res.sendFile(__dirname + '/assets/manie/sms-formats.json')
+})
+app.get('/manie/banners', (req, res)=>{
+    res.sendFile(__dirname + '/assets/manie/banners.json')
 })
 
 

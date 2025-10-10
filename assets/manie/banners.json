@@ -1,0 +1,60 @@
+{
+    "version": "banners-v20250207",
+    "fetchedAt": "2025-02-07T12:00:00Z",
+    "banners": [
+      {
+        "id": "2025-q1-new-features",
+        "title": "See what’s new in Manie",
+        "body": "We’ve added budget alerts and better analytics. Update now to try them out.",
+        "thumbnail": {
+          "light": "https://cdn.example.com/banners/2025-q1/light.png",
+          "dark": "https://cdn.example.com/banners/2025-q1/dark.png"
+        },
+        "cta": {
+          "label": "Update Manie",
+          "android": "https://play.google.com/store/apps/details?id=com.manie",
+          "ios": "https://apps.apple.com/app/id1234567890"
+        },
+        "audience": {
+          "minAppVersion": "0.9.0",
+          "maxAppVersion": null,
+          "platforms": ["android", "ios"]
+        },
+        "schedule": {
+          "startAt": "2025-02-01T00:00:00Z",
+          "endAt": "2025-03-15T23:59:59Z"
+        },
+        "tracking": {
+          "impressionEvent": "banner_impression",
+          "ctaEvent": "banner_cta_click"
+        }
+      },
+      {
+        "id": "2025-android-backup-warning",
+        "title": "Enable SMS backup",
+        "body": "Turn on Android SMS backup so your transactions stay safe during device resets.",
+        "thumbnail": {
+          "light": "https://cdn.example.com/banners/backup/light.png",
+          "dark": "https://cdn.example.com/banners/backup/dark.png"
+        },
+        "cta": {
+          "label": "Open Settings",
+          "android": "app-settings://backup_sms",
+          "ios": null
+        },
+        "audience": {
+          "platforms": ["android"],
+          "minAppVersion": "0.8.0"
+        },
+        "schedule": {
+          "startAt": "2025-02-10T00:00:00Z",
+          "endAt": "2025-04-30T23:59:59Z"
+        },
+        "tracking": {
+          "impressionEvent": "banner_impression",
+          "ctaEvent": "banner_cta_click"
+        }
+      }
+    ]
+  }
+  
