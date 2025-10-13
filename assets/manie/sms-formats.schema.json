@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "patterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "carrier": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "pattern": {
+            "type": "string"
+          },
+          "flags": {
+            "type": "string"
+          },
+          "captureMap": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "integer"
+              },
+              "secondParty": {
+                "type": "integer"
+              },
+              "accountNumber": {
+                "type": "integer"
+              },
+              "fee": {
+                "type": "integer"
+              },
+              "balance": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "amount",
+              "balance"
+            ],
+            "additionalProperties": false
+          },
+          "timestamp": {
+            "type": "object",
+            "properties": {
+              "group": {
+                "type": "integer"
+              },
+              "parser": {
+                "type": "string"
+              }
+            },
+            "required": ["group", "parser"],
+            "additionalProperties": false
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "carrier",
+          "locale",
+          "type",
+          "pattern",
+          "flags",
+          "captureMap",
+          "timestamp",
+          "tags",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["patterns"]
+}
