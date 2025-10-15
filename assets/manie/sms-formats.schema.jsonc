@@ -14,7 +14,7 @@
             "type": "string"
           },
           "locale": {
-            "type": "string"
+            "type": "string" // en-RW | rw-RW
           },
           "type": {
             "type": "string"
@@ -42,6 +42,15 @@
               },
               "balance": {
                 "type": "integer"
+              },
+              "transactionId": {
+                "type": "string"
+              },
+              "agentName": {
+                "type": "string"
+              },
+              "agentNumber": {
+                "type": "string"
               }
             },
             "required": [
@@ -57,7 +66,7 @@
                 "type": "integer"
               },
               "parser": {
-                "type": "string"
+                "type": "string" // airtel-shortcode | iso8601
               }
             },
             "required": ["group", "parser"],
