@@ -876,26 +876,6 @@
       "updatedAt": "2026-04-29T00:00:00Z"
     },
     {
-      "id": "airtel-mobile-topup-en",
-      "carrier": "airtel",
-      "locale": "en-RW",
-      "type": "transfer",
-      "pattern": "Mobile\\s+Top-up\\s+success(?:full?)\\s+for\\s+your\\s+(\\d+)\\s+Recharge\\s+Amount\\s+is\\s+(\\d+)\\s+RWF",
-      "flags": "i",
-      "captureMap": {
-        "accountNumber": 1,
-        "amount": 2
-      },
-      "tags": [
-        "transfer",
-        "airtel",
-        "airtime"
-      ],
-      "status": "active",
-      "createdAt": "2026-04-29T00:00:00Z",
-      "updatedAt": "2026-04-29T00:00:00Z"
-    },
-    {
       "id": "airtel-payment-merchant-en-v2",
       "carrier": "airtel",
       "locale": "en-RW",
