@@ -30,7 +30,7 @@ app.use('/ekosora/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, s
 /* ============= MIDDLEWARE ============== */
 
 require('dotenv').config()
-app.use(cors())
+require('./lib/manie/mount').mountManie(app, cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.raw())
@@ -54,9 +54,6 @@ app.get('/.well-known/assetlinks.json', (req, res)=>{
     res.sendFile(__dirname + '/assetlinks.json')
 })
 
-app.get('/manie/sms-formats', (req, res)=>{
-    res.sendFile(__dirname + '/assets/manie/sms-formats.json')
-})
 app.get('/manie/banners', (req, res)=>{
     res.sendFile(__dirname + '/assets/manie/banners.json')
 })
