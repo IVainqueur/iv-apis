@@ -167,3 +167,52 @@ test('a service notice survives the name-like rule: "Services will be unavailabl
     assert.equal(isNoiseSkeleton(skeleton).noise, true, skeleton);
     assert.equal(isNoiseSkeleton('{W+} be unavailable {N} RWF').noise, true);
 });
+
+// Dataset shapes: bundle activations are not transactions and the app reads MoMoAdvance itself.
+// Numbers and ids are invented. The {W} skeletons are what a device with a vocabulary from before
+// these words were added sends, so the rules must hold for both forms.
+const DATASET_NOTICES = [
+    ['bundle-activation', 'Yello!You have successfully activated 1000Frw=7GB/7Days worth 1,000 RWF'],
+    ['bundle-activation', 'Yello!You have successfully activated  2000Frw=4000Mins/Iminsi 30 worth 2,000 RWF'],
+    ['bundle-activation', 'Yello!You have successfully activated  2000Frw = 4000Mins/30Days worth 2,000 RWF'],
+    ['momoadvance', 'You have used 2070 RWF on FRI:31907745/MM with access fee 67 RWF on 2026-09-02 13:11:25 from MoMoAdvance. Your available overdraft balance is 20930 RWF. Financial transaction id: 30439184340'],
+    ['momoadvance', 'The amount 4202 RWF has been repaid from your account FRI:31907745/MM on 2026-09-02 15:31:52. Financial transaction id: 30441302961'],
+];
+
+const OLD_VOCABULARY_SKELETONS = [
+    ['bundle-activation', '{W}!You have successfully {W} {N}{W}={N}{W}/{N}{W+} {N} RWF'],
+    ['bundle-activation', '{W}!You have successfully {W} {N}{W}={N}{W}/{W} {N} {W} {N} RWF'],
+    ['bundle-activation', '{W}!You have successfully {W} {N}{W} = {N}{W}/{N}{W+} {N} RWF'],
+    ['momoadvance', 'You have {W} {N} RWF on {W}:{N}/{W} with {W} fee {N} RWF on {TS} from {W}. Your available {W} balance is {N} RWF. Financial transaction id: {PH}'],
+    ['momoadvance', 'The amount {N} RWF has been {W} from your account {W}:{N}/{W} on {TS}. Financial transaction id: {PH}'],
+];
+
+test('dataset notices (bundle activation, MoMoAdvance) are dropped under the current vocabulary', () => {
+    for (const [reason, body] of DATASET_NOTICES) {
+        const skeleton = skeletonOf(body);
+        assert.deepEqual(isNoiseSkeleton(skeleton), {noise: true, reason}, skeleton);
+    }
+});
+
+test('dataset notices are still dropped when a device sends the {W} form of the new words', () => {
+    for (const [reason, skeleton] of OLD_VOCABULARY_SKELETONS) {
+        assert.deepEqual(isNoiseSkeleton(skeleton), {noise: true, reason}, skeleton);
+    }
+});
+
+test('a preapproval cancellation is dropped', () => {
+    const skeleton = skeletonOf("*143*S*Your preapproval with identity 30672204 was canceled.Thank you for using MTN MobileMoney. *EN#");
+    assert.equal(isNoiseSkeleton(skeleton).noise, true, skeleton);
+    assert.deepEqual(isNoiseSkeleton('*{N}*S*Your preapproval of {N} RWF was approved.'), {noise: true, reason: 'preapproval-notice'});
+});
+
+test('the new notice rules leave real MTN shapes alone', () => {
+    for (const skeleton of [
+        'TxId:{PH}*S*Your payment of {N} RWF to {W+} {N} was completed at {TS}. Balance: {N}. Fee {N} RWF. *EN#',
+        'TransactionId: {PH} Your payment of {N} RWF to {W+} with token and ET Id: SUCCESSFUL at {TS}.Fee:{N} RWF. Balance {N} RWF.',
+        'You have received {N} RWF from {W+} ({PH}) at {TS} . Balance:{N} RWF. FT Id: {PH}',
+        '*165*S*{N} RWF transferred to {W+} ({PH}) at {TS} .Fee: {N}RWF.Balance: {N}RWF.Dial *182*1*3# and send money abroad *EN#',
+    ]) {
+        assert.deepEqual(isNoiseSkeleton(skeleton), {noise: false}, skeleton);
+    }
+});

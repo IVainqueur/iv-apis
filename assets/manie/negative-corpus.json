@@ -74,6 +74,9 @@
     {"id": "neg-069", "carrier": "airtel", "locale": "rw-RW", "category": "kinyarwanda-siyo", "body": "*165*TID PP260411.1430.A12345*S* Kohereza Rwf 5000 kuri ALICE SAMPLE 0780000001 siyo. Ubu mufite Rwf 12000. *KR#"},
     {"id": "neg-070", "carrier": "airtel", "locale": "rw-RW", "category": "kinyarwanda-not-possible", "body": "*165*TID PP260411.1430.A12345*S* Kohereza Rwf 5000 kuri ALICE SAMPLE 0780000001 ntibishobotse. Ubu mufite Rwf 12000. *KR#"},
     {"id": "neg-071", "carrier": "airtel", "locale": "rw-RW", "category": "kinyarwanda-cancelled", "body": "*165*TID PP260411.1430.A12345*S* Kohereza Rwf 5000 kuri ALICE SAMPLE 0780000001 byahagaritswe. Ubu mufite Rwf 12000. *KR#"},
-    {"id": "neg-072", "carrier": "airtel", "locale": "rw-RW", "category": "kinyarwanda-insufficient", "body": "*165*TID PP260411.1430.A12345*S* Kohereza Rwf 5000 kuri ALICE SAMPLE 0780000001. Amafaranga ntahagije. Ubu mufite Rwf 12000. *KR#"}
+    {"id": "neg-072", "carrier": "airtel", "locale": "rw-RW", "category": "kinyarwanda-insufficient", "body": "*165*TID PP260411.1430.A12345*S* Kohereza Rwf 5000 kuri ALICE SAMPLE 0780000001. Amafaranga ntahagije. Ubu mufite Rwf 12000. *KR#"},
+    {"id": "neg-073", "carrier": "mtn", "locale": "en-RW", "category": "bundle-activation", "body": "Yello!You have successfully activated 1000Frw=7GB/7Days worth 1,000 RWF"},
+    {"id": "neg-074", "carrier": "mtn", "locale": "en-RW", "category": "bundle-activation", "body": "Yello!You have successfully activated  2000Frw = 4000Mins/30Days worth 2,000 RWF"},
+    {"id": "neg-075", "carrier": "mtn", "locale": "en-RW", "category": "preapproval-cancelled", "body": "*143*S*Your preapproval with identity 3067 was canceled.Thank you for using MTN MobileMoney. *EN#"}
   ]
 }

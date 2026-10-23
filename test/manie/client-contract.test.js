@@ -899,3 +899,82 @@ describe('R. on-device reporter reference model (pure functions the app implemen
         assert.equal(nextBackoffMs(1, 1), Math.round(30 * 60 * 1000 * 1.2));
     });
 });
+
+describe('S. served base patterns for the MTN dataset formats (remote patterns only)', () => {
+    const base = JSON.parse(fs.readFileSync(STATIC_BASE_PATH, 'utf8'));
+    const bankBody = (txId, payee, amount, fee, balance, etId = '') =>
+        `TransactionId: ${txId} Your payment of ${amount} RWF to ${payee} with token and ET Id: ${etId} SUCCESSFUL at 2026-09-04T09:52:29.406+02:00.Fee:${fee} RWF. Balance ${balance} RWF.`;
+    const bank = [
+        [bankBody('30000000001', 'ALICE EXAMPLE at EXAMPLE BANK', 120000, 20, 46138), 120000, 20, 46138, '30000000001', 'ALICE EXAMPLE'],
+        [bankBody('30000000002', 'Bob SAMPLE at Airtel', 2500, 20, 33343), 2500, 20, 33343, '30000000002', 'Bob SAMPLE'],
+        [bankBody('30000000003', 'SAMPLE ENERGY LTD at TESTBANK', 400, 0, 23643), 400, 0, 23643, '30000000003', 'SAMPLE ENERGY LTD'],
+        [bankBody('30000000004', 'EXAMPLE CATERING Limited', 48000, 0, 17000), 48000, 0, 17000, '30000000004', 'EXAMPLE CATERING Limited'],
+        [bankBody('30000000005', 'Carol TESTER', 1000, 20, 0), 1000, 20, 0, '30000000005', 'Carol TESTER'],
+    ];
+    const electricity = bankBody('30000000006', 'SAMPLE POWER', 5000, 0, 41138, '1234-5678-9012-3456');
+    const merchantZero = [
+        ['TxId:30000000007*S*Your payment of 2,000 RWF to EXAMPLE CAFE Ltd 077314 was completed at 2026-09-02 13:31:31.  Balance: 0. Fee 0 RWF. *EN#', 2000, 'EXAMPLE CAFE Ltd 077314', '30000000007'],
+        ['TxId:30000000008*S*Your payment of 20,000 RWF to SAMPLE GROUP Ltd 0712245 was completed at 2026-09-07 09:41:49.  Balance: 0. Fee 0 RWF. *EN#', 20000, 'SAMPLE GROUP Ltd 0712245', '30000000008'],
+    ];
+
+    async function remoteOnlyClient(t) {
+        const env = H.makeEnv({fetchImpl: async () => H.jsonResponse(H.servedConfig({patterns: base.patterns}))});
+        let client;
+        try {
+            client = H.loadClient(env, {dropBuiltins: true});
+        } catch (error) {
+            if (error instanceof H.PatchDriftError) {
+                t.skip(error.message);
+                return null;
+            }
+            throw error;
+        }
+        await client.rrc.syncRegexConfig({forceRefresh: true});
+        return client;
+    }
+
+    test('ids are unique and the bank pattern is served before the electricity pattern', () => {
+        const ids = base.patterns.map(p => p.id);
+        assert.equal(new Set(ids).size, ids.length);
+        assert.ok(ids.indexOf('mtn-payment-bank-v1') < ids.indexOf('mtn-token-payment-v1'));
+        assert.ok(ids.includes('mtn-payment-merchant-zero-balance-v1'));
+    });
+
+    test('empty ET Id payments parse as plain payments with the payee only', {skip: SKIP_REAL}, async t => {
+        const client = await remoteOnlyClient(t);
+        if (!client) return;
+        for (const [body, amount, fee, balance, transactionId, secondParty] of bank) {
+            const [tx] = classifyAll(client, body).transactions;
+            assert.ok(tx, body);
+            assert.deepEqual(
+                {type: tx.type, direction: tx.direction, amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty, tags: tx.tags},
+                {type: 'payment', direction: 'out', amount, fee, balance, transactionId, secondParty, tags: ['payment']},
+                body,
+            );
+            assert.equal(tx.timestamp, Date.UTC(2026, 8, 4, 7, 52, 29, 406));
+        }
+    });
+
+    test('a non-empty ET Id still parses through the electricity pattern', {skip: SKIP_REAL}, async t => {
+        const client = await remoteOnlyClient(t);
+        if (!client) return;
+        const [tx] = classifyAll(client, electricity).transactions;
+        assert.ok(tx);
+        assert.deepEqual(tx.tags, ['payment', 'token', 'electricity']);
+        assert.deepEqual({amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty}, {amount: 5000, fee: 0, balance: 41138, transactionId: '30000000006', secondParty: 'SAMPLE POWER'});
+    });
+
+    test('merchant payments that print "Balance: 0." with no currency are recovered by the bridge pattern', {skip: SKIP_REAL}, async t => {
+        const client = await remoteOnlyClient(t);
+        if (!client) return;
+        for (const [body, amount, secondParty, transactionId] of merchantZero) {
+            const [tx] = classifyAll(client, body).transactions;
+            assert.ok(tx, body);
+            assert.deepEqual(
+                {type: tx.type, amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty, tags: tx.tags},
+                {type: 'payment', amount, fee: 0, balance: 0, transactionId, secondParty, tags: ['payment', 'merchant']},
+                body,
+            );
+        }
+    });
+});

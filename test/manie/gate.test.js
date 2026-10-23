@@ -599,3 +599,45 @@ test('testPattern cannot be used to reach globals or code generation', () => {
         assert.doesNotThrow(() => testPattern({pattern}, 'x'), pattern);
     }
 });
+
+/* ---------- carrier signals: MTN uses *S* too ---------- */
+
+const MTN_MERCHANT_ZERO_BALANCE = 'txid:{PH}*s*your payment of {N} rwf to {W+} {N} was completed at {TS}. balance: {N}. fee {N} rwf. *en#';
+
+test('carrier-signals: the MTN merchant shape with a bare balance (dataset messages 15 and 50) passes the whole gate under mtn', () => {
+    for (const skeleton of [MTN_MERCHANT_ZERO_BALANCE, 'TxId:{PH}*S*Your payment of {N} RWF to {W+} {N} was completed at {TS}. Balance: {N}. Fee {N} RWF. *EN#']) {
+        const result = runGate(goodDraft(skeleton, 'mtn'), {existingPatterns: EXISTING});
+        assert.equal(check(result, 'carrier-signals').ok, true, check(result, 'carrier-signals').detail);
+        assert.deepEqual(failedNames(result), [], skeleton);
+        assert.equal(result.ok, true);
+    }
+});
+
+test('carrier-signals: MTN *S* forms (*NNN*S*, TxId:..*S*, *NNN*TxId:..*S*) never conflict with carrier mtn', () => {
+    for (const skeleton of [
+        '*{N}*S*{N} RWF transferred to {W+} ({PH}) at {TS} .Fee: {N}RWF.Balance: {N}RWF.Dial *{N}*{N}*{N}# and send money abroad *EN#',
+        '*{N}*TxId:{PH}*S*Your payment of {N} RWF to {W+} with token and ET Id: {PH} was completed at {TS}. Fee {N} RWF. Balance: {N} RWF . Message: - -. *EN#',
+        "*{N}*S*Y'ello, you have received {N} RWF from {W+} ({PH}) at {TS}. Balance: {N} RWF. *EN#",
+    ]) {
+        const result = runGate(goodDraft(skeleton, 'mtn'), {existingPatterns: EXISTING});
+        assert.equal(check(result, 'carrier-signals').ok, true, skeleton + ': ' + check(result, 'carrier-signals').detail);
+    }
+});
+
+test('carrier-signals: genuine Airtel markers still fail under mtn and pass under airtel', () => {
+    const airtelShapes = [
+        AIRTEL_SKELETON,
+        '*{N}*Txn ID {TID}*R* Received Rwf {N} from {W+} {PH}. NEW BALANCE Rwf {N}. *EN#',
+        '*{N}*TID:{TID}*S* Airtime of Rwf {N} done to {PH}. Balance: Rwf {N} *EN#',
+        '*{N}*Txn ID {PH}*S* Sent Rwf {N} to {W+} {PH}. Fee Rwf {N}. BAL Rwf {N}. *EN#',
+        '*{N}*R* Received Rwf {N} from {W+} {PH}. NEW BALANCE Rwf {N}. *EN#',
+        '*{N}*S* Mwakiriye RWF {N} avuye kuri {W+} {PH}. Asigaye ni RWF {N}. *KR#',
+        '*{N}*S* Kugura Inite ya Rwf {N} byagenze neza. Ubu kuri konti mufite Rwf {N}. *KR#',
+    ];
+    for (const skeleton of airtelShapes) {
+        const asMtn = check(runGate(goodDraft(skeleton, 'mtn')), 'carrier-signals');
+        assert.equal(asMtn.ok, false, 'should fail under mtn: ' + skeleton);
+        assert.match(asMtn.detail, /filed under MTN/);
+        assert.equal(check(runGate(goodDraft(skeleton, 'airtel')), 'carrier-signals').ok, true, 'should pass under airtel: ' + skeleton);
+    }
+});
