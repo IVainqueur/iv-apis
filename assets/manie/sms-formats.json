@@ -951,11 +951,36 @@
    "updatedAt": "2026-04-29T00:00:00Z"
   },
   {
+   "id": "mtn-payment-bank-v1",
+   "carrier": "mtn",
+   "locale": "en-RW",
+   "type": "payment",
+   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)(?:\\s+at\\s+.+?)?\\s+with token and ET Id:\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
+   "flags": "i",
+   "captureMap": {
+    "transactionId": 1,
+    "amount": 2,
+    "secondParty": 3,
+    "fee": 5,
+    "balance": 6
+   },
+   "timestamp": {
+    "group": 4,
+    "parser": "iso8601"
+   },
+   "tags": [
+    "payment"
+   ],
+   "status": "active",
+   "createdAt": "2026-10-23T00:00:00Z",
+   "updatedAt": "2026-10-23T00:00:00Z"
+  },
+  {
    "id": "mtn-token-payment-v1",
    "carrier": "mtn",
    "locale": "en-RW",
    "type": "payment",
-   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)\\s+with token and ET Id:\\s*(.*?)\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
+   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)\\s+with token and ET Id:\\s*(\\S.*?)\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
    "flags": "i",
    "captureMap": {
     "transactionId": 1,
@@ -975,7 +1000,33 @@
    ],
    "status": "active",
    "createdAt": "2026-08-01T00:00:00Z",
-   "updatedAt": "2026-08-01T00:00:00Z"
+   "updatedAt": "2026-10-23T00:00:00Z"
+  },
+  {
+   "id": "mtn-payment-merchant-zero-balance-v1",
+   "carrier": "mtn",
+   "locale": "en-RW",
+   "type": "payment",
+   "pattern": "TxId:(\\d+).*?Your payment of ([\\d,]+) RWF to (.+?) was completed at ([\\d\\-\\s:]+)\\.\\s*Balance:\\s*(\\d+)\\.\\s*Fee\\s+(\\d+)\\s*RWF",
+   "flags": "i",
+   "captureMap": {
+    "transactionId": 1,
+    "amount": 2,
+    "secondParty": 3,
+    "balance": 5,
+    "fee": 6
+   },
+   "timestamp": {
+    "group": 4,
+    "parser": "iso8601"
+   },
+   "tags": [
+    "payment",
+    "merchant"
+   ],
+   "status": "active",
+   "createdAt": "2026-10-23T00:00:00Z",
+   "updatedAt": "2026-10-23T00:00:00Z"
   }
  ]
 }
