@@ -955,7 +955,7 @@
    "carrier": "mtn",
    "locale": "en-RW",
    "type": "payment",
-   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)(?:\\s+at\\s+.+?)?\\s+with token and ET Id:\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
+   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)(?:\\s+at\\s+.+?)?\\s+with token and ET Id:\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?\\s*Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
    "flags": "i",
    "captureMap": {
     "transactionId": 1,
@@ -973,14 +973,14 @@
    ],
    "status": "active",
    "createdAt": "2026-10-23T00:00:00Z",
-   "updatedAt": "2026-10-23T00:00:00Z"
+   "updatedAt": "2026-10-26T00:00:00Z"
   },
   {
    "id": "mtn-token-payment-v1",
    "carrier": "mtn",
    "locale": "en-RW",
    "type": "payment",
-   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)\\s+with token and ET Id:\\s*(\\S.*?)\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
+   "pattern": "TransactionId:\\s*(\\d+)\\s*Your payment of\\s*([\\d,]+)\\s*RWF to\\s*(.+?)\\s+with token and ET Id:\\s*(\\S.*?)\\s*SUCCESSFUL at\\s*([\\dT:.+-]+?)\\.?\\s*Fee:\\s*([\\d,]+)\\s*RWF\\.?\\s*Balance\\s*([\\d,]+)\\s*RWF",
    "flags": "i",
    "captureMap": {
     "transactionId": 1,
@@ -1000,7 +1000,7 @@
    ],
    "status": "active",
    "createdAt": "2026-08-01T00:00:00Z",
-   "updatedAt": "2026-10-23T00:00:00Z"
+   "updatedAt": "2026-10-26T00:00:00Z"
   },
   {
    "id": "mtn-payment-merchant-zero-balance-v1",

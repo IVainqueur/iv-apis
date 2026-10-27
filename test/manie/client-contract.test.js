@@ -902,8 +902,9 @@ describe('R. on-device reporter reference model (pure functions the app implemen
 
 describe('S. served base patterns for the MTN dataset formats (remote patterns only)', () => {
     const base = JSON.parse(fs.readFileSync(STATIC_BASE_PATH, 'utf8'));
-    const bankBody = (txId, payee, amount, fee, balance, etId = '') =>
-        `TransactionId: ${txId} Your payment of ${amount} RWF to ${payee} with token and ET Id: ${etId} SUCCESSFUL at 2026-09-04T09:52:29.406+02:00.Fee:${fee} RWF. Balance ${balance} RWF.`;
+    const bankBody = (txId, payee, amount, fee, balance, etId = '', gap = '') =>
+        `TransactionId: ${txId} Your payment of ${amount} RWF to ${payee} with token and ET Id: ${etId} SUCCESSFUL at 2026-09-04T09:52:29.406+02:00.${gap}Fee:${fee} RWF. Balance ${balance} RWF.`;
+    const feeGaps = [['', 'glued'], [' ', 'one space'], ['  ', 'two spaces'], ['\t', 'tab'], ['\n', 'newline'], ['\r\n', 'carriage return and newline']];
     const bank = [
         [bankBody('30000000001', 'ALICE EXAMPLE at EXAMPLE BANK', 120000, 20, 46138), 120000, 20, 46138, '30000000001', 'ALICE EXAMPLE'],
         [bankBody('30000000002', 'Bob SAMPLE at Airtel', 2500, 20, 33343), 2500, 20, 33343, '30000000002', 'Bob SAMPLE'],
@@ -962,6 +963,55 @@ describe('S. served base patterns for the MTN dataset formats (remote patterns o
         assert.ok(tx);
         assert.deepEqual(tx.tags, ['payment', 'token', 'electricity']);
         assert.deepEqual({amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty}, {amount: 5000, fee: 0, balance: 41138, transactionId: '30000000006', secondParty: 'SAMPLE POWER'});
+    });
+
+    test('empty ET Id payments parse when whitespace separates the sentence period from Fee', {skip: SKIP_REAL}, async t => {
+        const client = await remoteOnlyClient(t);
+        if (!client) return;
+        for (const [gap, label] of feeGaps) {
+            const body = bankBody('30000000009', 'Dana SAMPLE at Airtel', 6500, 20, 0, '', gap);
+            const [tx] = classifyAll(client, body).transactions;
+            assert.ok(tx, label);
+            assert.deepEqual(
+                {type: tx.type, direction: tx.direction, amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty, tags: tx.tags},
+                {type: 'payment', direction: 'out', amount: 6500, fee: 20, balance: 0, transactionId: '30000000009', secondParty: 'Dana SAMPLE', tags: ['payment']},
+                label,
+            );
+            assert.equal(tx.timestamp, Date.UTC(2026, 8, 4, 7, 52, 29, 406), label);
+        }
+    });
+
+    test('a non-empty ET Id still parses through the electricity pattern when whitespace separates the sentence period from Fee', {skip: SKIP_REAL}, async t => {
+        const client = await remoteOnlyClient(t);
+        if (!client) return;
+        for (const [gap, label] of feeGaps) {
+            const body = bankBody('30000000006', 'SAMPLE POWER', 5000, 0, 41138, '1234-5678-9012-3456', gap);
+            const [tx] = classifyAll(client, body).transactions;
+            assert.ok(tx, label);
+            assert.deepEqual(tx.tags, ['payment', 'token', 'electricity'], label);
+            assert.deepEqual({amount: tx.amount, fee: tx.fee, balance: tx.balance, transactionId: tx.transactionId, secondParty: tx.secondParty}, {amount: 5000, fee: 0, balance: 41138, transactionId: '30000000006', secondParty: 'SAMPLE POWER'}, label);
+        }
+    });
+
+    test('the bank and electricity patterns accept any whitespace before Fee and never match each other', () => {
+        const compile = id => {
+            const entry = base.patterns.find(p => p.id === id);
+            return new RegExp(entry.pattern, entry.flags);
+        };
+        const bankRe = compile('mtn-payment-bank-v1');
+        const tokenRe = compile('mtn-token-payment-v1');
+        for (const [gap, label] of feeGaps) {
+            const emptyBody = bankBody('30000000009', 'Dana SAMPLE at Airtel', 6500, 20, 0, '', gap);
+            const elecBody = bankBody('30000000006', 'SAMPLE POWER', 5000, 0, 41138, '1234-5678-9012-3456', gap);
+            assert.ok(bankRe.test(emptyBody), `bank matches empty ET Id: ${label}`);
+            assert.ok(!tokenRe.test(emptyBody), `token ignores empty ET Id: ${label}`);
+            assert.ok(tokenRe.test(elecBody), `token matches electricity: ${label}`);
+            assert.ok(!bankRe.test(elecBody), `bank ignores electricity: ${label}`);
+            const groups = bankRe.exec(emptyBody);
+            assert.equal(groups?.[3], 'Dana SAMPLE', label);
+            assert.equal(groups?.[4], '2026-09-04T09:52:29.406+02:00', label);
+            assert.equal(groups?.[5], '20', label);
+        }
     });
 
     test('merchant payments that print "Balance: 0." with no currency are recovered by the bridge pattern', {skip: SKIP_REAL}, async t => {
